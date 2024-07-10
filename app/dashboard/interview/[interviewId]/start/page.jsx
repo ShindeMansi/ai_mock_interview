@@ -59,6 +59,9 @@ import { db } from "@/utils/db";
 import { eq } from "drizzle-orm";
 import { MockInterview } from "@/utils/schema";
 import QuetionSections from "./_components/QuetionSections";
+import RecordAnsSection from "./_components/RecordAnsSection";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function StartInterview({ params }) {
   const [interviewData, setInterviewData] = useState(null);
@@ -94,13 +97,29 @@ function StartInterview({ params }) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Questions */}
         <QuetionSections mockInterviewQuestion={mockInterviewQuestion} 
             activeQuetionIndex={activeQuetionIndex}
         />
         
         {/* Video/Audio Recording */}
+        <RecordAnsSection
+          mockInterviewQuestion={mockInterviewQuestion} 
+            activeQuetionIndex={activeQuetionIndex}
+            interviewData={interviewData}
+        />
+      </div>
+      <div className="flex justify-end gap-6">
+       {activeQuetionIndex>0&& 
+       <Button onClick={()=>setActiveQuetionIndex(activeQuetionIndex-1)}>Previous Question</Button>}
+        {activeQuetionIndex!=mockInterviewQuestion?.length-1&&
+        <Button onClick={()=>setActiveQuetionIndex(activeQuetionIndex+1)}>Next Question</Button>}
+        {activeQuetionIndex==mockInterviewQuestion?.length-1&&
+        <Link href={'/dashboard/interview/'+interviewData?.mockId+"/feedback"}>
+        <Button>End Interview</Button>
+        </Link>
+        }
       </div>
     </div>
   );

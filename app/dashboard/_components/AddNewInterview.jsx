@@ -188,11 +188,67 @@ function AddNewInterview() {
   const router = useRouter();
   const { user } = useUser();
 
+  // const onSubmit = async (e) => {
+  //   setLoading(true);
+  //   e.preventDefault();
+  //   console.log(jobPosition, jobDesc, jobExperience);
+
+  //   const InputPromt =
+  //     "Job Position:" +
+  //     jobPosition +
+  //     ",Job Description:" +
+  //     jobDesc +
+  //     ",Years Of Experience:" +
+  //     jobExperience +
+  //     ",Depends on this information please give me " +
+  //     process.env.NEXT_PUBLIC_INTERVIEW_QUETION_COUNT +
+  //     " interview quetion with Answered in JSON Format,Give Quetion and Answered as field in JSON";
+    
+  //   try {
+  //     const result = await chatSession.sendMessage(InputPromt);
+  //     let MockJsonResp = await result.response.text();
+      
+  //     // Clean the response string
+  //     MockJsonResp = MockJsonResp.replace(/```json/g, "").replace(/```/g, "").trim();
+      
+  //     const parsedResponse = JSON.parse(MockJsonResp);
+  //     console.log(parsedResponse);
+
+  //     if (parsedResponse) {
+  //       const resp = await db.insert(MockInterview)
+  //         .values({
+  //           mockId: uuidv4(),
+  //           jsonMockResp: MockJsonResp,
+  //           jobPosition: jobPosition,
+  //           jobDesc: jobDesc,
+  //           jobExperience: jobExperience,
+  //           createdBy: user?.primaryEmailAddress?.emailAddress,
+  //           createdAt: moment().format("DD-MM-YYYY"),
+  //         })
+  //         .returning({ mockId: MockInterview.mockId });
+
+  //       setJsonResponse(MockJsonResp);
+  //       console.log("Inserted ID:", resp);
+        
+  //       if (resp) {
+  //         setOpenDialog(false);
+  //         router.push('/dashboard/interview/' + resp[0].mockId);
+  //       }
+  //     } else {
+  //       console.log("ERROR");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to parse response or insert into DB:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
     console.log(jobPosition, jobDesc, jobExperience);
-
+  
     const InputPromt =
       "Job Position:" +
       jobPosition +
@@ -206,15 +262,21 @@ function AddNewInterview() {
     
     try {
       const result = await chatSession.sendMessage(InputPromt);
-      let MockJsonResp = await result.response.text();
+     // let MockJsonResp = await result.response.text();
       
       // Clean the response string
-      MockJsonResp = MockJsonResp.replace(/```json/g, "").replace(/```/g, "").trim();
+      // MockJsonResp = MockJsonResp.replace(/```json/g, "").replace(/```/g, "").trim();
+      const MockJsonResp = result.response
+     .text()
+      .replace("```json","")
+      .replace("```","");
       
-      const parsedResponse = JSON.parse(MockJsonResp);
-      console.log(parsedResponse);
-
-      if (parsedResponse) {
+      console.log("Raw JSON response:", MockJsonResp); // Log the response for debugging
+  
+      try {
+        const parsedResponse = JSON.parse(MockJsonResp);
+        console.log("Parsed JSON response:", parsedResponse);
+  
         const resp = await db.insert(MockInterview)
           .values({
             mockId: uuidv4(),
@@ -226,7 +288,7 @@ function AddNewInterview() {
             createdAt: moment().format("DD-MM-YYYY"),
           })
           .returning({ mockId: MockInterview.mockId });
-
+  
         setJsonResponse(MockJsonResp);
         console.log("Inserted ID:", resp);
         
@@ -234,15 +296,18 @@ function AddNewInterview() {
           setOpenDialog(false);
           router.push('/dashboard/interview/' + resp[0].mockId);
         }
-      } else {
-        console.log("ERROR");
+      } catch (error) {
+        console.error("Failed to parse JSON response:", error);
+        console.log("JSON string causing the error:", MockJsonResp);
+        // Handle the error appropriately
       }
     } catch (error) {
-      console.error("Failed to parse response or insert into DB:", error);
+      console.error("Failed to send message or retrieve response:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div>
