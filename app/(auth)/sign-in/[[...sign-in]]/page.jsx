@@ -32,7 +32,7 @@ export default function Page() {
         </h2>
 
         <p className="mt-4 leading-relaxed text-white/90">
-        AI Mock Interview App is a cutting-edge application built with Next.js designed to help users prectice and prepare for technical interviews.
+        AI Mock Interview App is a cutting-edge application built with Next.js designed to help users practice and prepare for technical interviews.
         </p>
       </div>
     </section>
@@ -65,7 +65,7 @@ export default function Page() {
           </h1>
 
           <p className="mt-4 leading-relaxed text-gray-500 dark:text-gray-400">
-            AI Mock Interview App is a cutting-edge application built with Next.js designed to help users prectice and prepare for technical interviews.
+            AI Mock Interview App is a cutting-edge application built with Next.js designed to help users practice and prepare for technical interviews.
           </p>
         </div>
 
